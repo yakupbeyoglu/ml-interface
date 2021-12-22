@@ -13,3 +13,10 @@ Python Machine Learning Interface to analyze different dataset with ML algorithm
 ```
     $ pip3 install -r requirements.txt
 ```
+
+# Run Project
+
+```
+    $ conda activate ml-interface
+    $ ./main.py
+```
