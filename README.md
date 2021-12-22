@@ -18,5 +18,5 @@ Python Machine Learning Interface to analyze different dataset with ML algorithm
 
 ```
     $ conda activate ml-interface
-    $ ./main.py
+    $ ./main.py --help
 ```
