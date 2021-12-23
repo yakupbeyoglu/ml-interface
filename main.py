@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import logging
-
+from ML.DataSet import DataSet
 
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
@@ -18,3 +18,8 @@ if not arguments.index :
     raise argparse.ArgumentTypeError('--index is not given')
 
 print(f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
+
+dataset = DataSet(arguments.csv, arguments.index);
+x,y = dataset.GetXYData()
+print(x)
+print(dataset.GetXData())
