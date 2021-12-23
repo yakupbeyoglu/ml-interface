@@ -1,5 +1,7 @@
 import pandas
 import os
+import matplotlib.pyplot as plotter
+
 class DataSet:
     
     def __init__(self, path, class_index) :
@@ -28,5 +30,30 @@ class DataSet:
     def GetYData(self) :
         return self.Y
     
-    def GetXYData(self):
+    def GetXYData(self) :
         return self.X, self.Y
+    
+    def GetNumberOfClasses(self) :
+        return len(self.Y.value_counts())
+
+    def GetAmountOfClasses (self, normalize = True) :
+        map   = self.Y.value_counts(normalize)
+        return map
+    
+    def PrintAmountOfClasses (self, normalize = True) :
+        map   = self.GetAmountOfClasses(normalize)
+        print(f'number of classes = {len(map)}')
+        for key, value in map.iteritems() : 
+            print (key, value)
+    
+    def GetBarChartOfClasses(self) :
+        figure = plotter.figure()
+        classes = []
+        values = []
+        map = self.GetAmountOfClasses(False)
+        for key, value in map.iteritems() :
+            classes.append(key)
+            values.append(value)
+        dataframe = pandas.DataFrame(values, index = classes)
+        plot = pandas.concat([dataframe], axis=1).plot.bar(rot=0)
+        plot.get_figure().savefig('output.pdf', format='pdf')

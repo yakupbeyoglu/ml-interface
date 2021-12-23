@@ -2,6 +2,7 @@
 import argparse
 import logging
 from ML.DataSet import DataSet
+from ML.GausianNaiveBayes import GausianNaiveBayes
 
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
@@ -20,6 +21,10 @@ if not arguments.index :
 print(f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
 dataset = DataSet(arguments.csv, arguments.index);
+dataset.GetBarChartOfClasses()
 x,y = dataset.GetXYData()
 print(x)
-print(dataset.GetXData())
+print("Hey you can find values below\n", dataset.GetAmountOfClasses())
+
+gausian_naive_bayes = GausianNaiveBayes(dataset)
+print("prior probabilities : \n", gausian_naive_bayes.GetPriorProbability())
