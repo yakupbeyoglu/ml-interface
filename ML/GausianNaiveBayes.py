@@ -15,6 +15,8 @@ class GausianNaiveBayes :
         print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
         print("matrix : ", confusion_matrix(y_test, y_pred))
         print("f1 score = ", f1_score(y_test, y_pred, zero_division=1))
+    
     def GetPriorProbability(self) :
         return self.dataset.GetAmountOfClasses()
+
     
