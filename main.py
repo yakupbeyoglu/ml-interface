@@ -27,3 +27,6 @@ print(x)
 print("Hey you can find values below\n", dataset.GetAmountOfClasses())
 
 gausian_naive_bayes = GausianNaiveBayes(dataset)
+
+print("below : \n\n\n")
+gausian_naive_bayes.KFold(5)

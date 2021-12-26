@@ -1,6 +1,8 @@
 import pandas
+import numpy as np
 import os
 import matplotlib.pyplot as plotter
+from sklearn.utils import shuffle
 
 class DataSet:
     
@@ -17,6 +19,8 @@ class DataSet:
             raise f'Given classes index is {class_index} but number of columns in data set is {self.dataset.columns}'
         self.X = self.dataset.iloc[:, 0 : class_index - 1]
         self.Y = self.dataset.iloc[:, class_index - 1]
+        self.X, self.Y = shuffle(self.X, self.Y)
+
         
     def GetSize(self):
         return len(self.dataset.row)
