@@ -3,7 +3,7 @@ import argparse
 import logging
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
-
+from ML.LogisticRegression import LogisticRegressionModel
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -29,4 +29,11 @@ print("Hey you can find values below\n", dataset.GetAmountOfClasses())
 gausian_naive_bayes = GausianNaiveBayes(dataset)
 
 print("below : \n\n\n")
-gausian_naive_bayes.KFold(5)
+values = gausian_naive_bayes.KFold(5)
+print("Naive bayes KFOLD 5 :\n" , values)
+regression = LogisticRegressionModel(dataset)
+values = regression.KFold(5)
+print("Logistic Regression KFOLD 5:\n", values)
+
+values = regression.KBest(5,5)
+print("Best Feature = \n", values)

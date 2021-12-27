@@ -11,8 +11,10 @@ class GausianNaiveBayes(MLModel) :
     def __init__(self, dataset) :
         self.dataset = dataset
         X_train, X_test, y_train, y_test = train_test_split(dataset.GetXData(), dataset.GetYData(), test_size=0.5, random_state=0)
+        
         gnb = GaussianNB()
-        gnb.fit(X_train, y_train).predict(X_test)
+        gnb.fit(X_train, y_train)
+
         y_pred = gnb.predict(X_test)
         print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
         print("matrix : ", confusion_matrix(y_test, y_pred))
@@ -31,30 +33,42 @@ class GausianNaiveBayes(MLModel) :
         kf = KFold(n_splits = number, random_state = None)
         x_data = self.dataset.GetXData()
         y_data = self.dataset.GetYData()
+
+        predictionresult = {
+            "precision" : 0,
+            "recall" : 0,
+            "f1-score" : 0,
+            "accurancy" : 0
+        }
+        
         for train, test in kf.split(x_data) : 
             x_train, x_test = x_data.iloc[train, :], x_data.iloc[test,:]
             y_train, y_test = y_data.iloc[train], y_data.iloc[test]
             pred = self.Process(x_train, y_train, x_test)
-            print(self.GetPrecision(y_test, pred))
+            predictionresult["precision"] += self.GetPrecision(y_test, pred)
+            predictionresult["recall"] += self.GetRecall(y_test, pred)
+            predictionresult["f1-score"] += self.GetF1Score(y_test, pred)
+            predictionresult["accurancy"] += self.GetAccurancy(y_test, pred)
+            
+        for value in predictionresult:
+            predictionresult[value] /= number
+        return predictionresult
 
     def GetConfusionMatrix(self, y_test, y_pred):
         return confusion_matrix(y_test, y_pred)
     
     def GetF1Score(self, y_test, y_pred):
-        return f1_score(y_test, y_pred, zero_division = 1)
+        return f1_score(y_test, y_pred, zero_division = 0)
     
     def GetAccurancy(self, y_test, y_pred):
-        return metrics.accuracy_score(y_test, y_pred, zero_division = 1)
+        return metrics.accuracy_score(y_test, y_pred)
 
     def GetRecall(self, y_test, y_pred):
-        return metrics.recall_score(y_test, y_pred, zero_division = 1)
+        return metrics.recall_score(y_test, y_pred, zero_division = 0)
     
     def GetPrecision(self, y_test, y_pred):
-        return metrics.precision_score(y_test, y_pred, zero_division = 1)
+        return metrics.precision_score(y_test, y_pred, zero_division = 0)
     
-    def GetF1Score(self, y_test, y_pred):
-        return super().GetF1Score(y_test, y_pred)
-
     def GetPriorProbability(self) :
         return self.dataset.GetAmountOfClasses()
 
