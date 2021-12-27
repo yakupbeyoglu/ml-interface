@@ -88,6 +88,9 @@ class LogisticRegressionModel(MLModel):
         featureselect.fit(x_train, y_train)
         x_train_selected = featureselect.transform(x_train)
         x_test_selected = featureselect.transform(x_test)
+        cols = featureselect.get_support(indices=True)
+        features_df_new = x_train.iloc[:,cols]
+        print("selected features : \n ", features_df_new)
         return x_train_selected, x_test_selected
         
 
