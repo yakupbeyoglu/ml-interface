@@ -35,5 +35,5 @@ regression = LogisticRegressionModel(dataset)
 values = regression.KFold(5)
 print("Logistic Regression KFOLD 5:\n", values)
 
-values = regression.KBest(5,5)
+values = regression.KBest(5, 5)
 print("Best Feature = \n", values)

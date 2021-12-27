@@ -9,7 +9,7 @@ from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import f_regression
-
+from sklearn import preprocessing
 
 class LogisticRegressionModel(MLModel):
     def __init__(self, dataset):
@@ -86,6 +86,10 @@ class LogisticRegressionModel(MLModel):
     def SelectFeatures (self, number, x_train, y_train, x_test):  
         featureselect = SelectKBest(score_func = f_regression, k = number)
         featureselect.fit(x_train, y_train)
+        scores = []
+        for score in featureselect.scores_ : 
+            scores.append('{0:f}'.format(score))
+        print("Scores = ", scores)
         x_train_selected = featureselect.transform(x_train)
         x_test_selected = featureselect.transform(x_test)
         cols = featureselect.get_support(indices=True)
