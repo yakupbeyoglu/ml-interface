@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 class DataSet:
     
-    def __init__(self, path, class_index) :
+    def __init__(self, path, class_index, normalize = True) :
         if not os.path.exists(path) : 
             raise f'Given csv file with {path} is not exists'
         self.csv_path = path
@@ -16,8 +16,9 @@ class DataSet:
             raise f'Given classes index {class_index} is not valid'
         self.class_index = class_index
         self.dataset = pandas.read_csv(self.csv_path)
-        scaler = MinMaxScaler()
-        self.dataset = pandas.DataFrame(scaler.fit_transform(self.dataset), columns=self.dataset.columns, index=self.dataset.index)
+        if normalize: 
+            scaler = MinMaxScaler()
+            self.dataset = pandas.DataFrame(scaler.fit_transform(self.dataset), columns=self.dataset.columns, index=self.dataset.index)
         if class_index > len(self.dataset.columns) : 
             raise f'Given classes index is {class_index} but number of columns in data set is {self.dataset.columns}'
         self.X = self.dataset.iloc[:, 0 : class_index - 1]

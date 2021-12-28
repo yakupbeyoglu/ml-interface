@@ -20,7 +20,7 @@ if not arguments.index :
 
 print(f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index);
+dataset = DataSet(arguments.csv, arguments.index, False);
 dataset.GetBarChartOfClasses()
 x,y = dataset.GetXYData()
 print(x)
@@ -37,3 +37,8 @@ print("Logistic Regression KFOLD 5:\n", values)
 
 values = regression.KBest(5, 5)
 print("Best Feature = \n", values)
+print(gausian_naive_bayes.DataSetSummarize())
+zeros, ones = gausian_naive_bayes.separate_by_class()
+zeros, ones = gausian_naive_bayes.DataSetSummarize(zeros,ones)
+print("zeros", zeros)
+gausian_naive_bayes.GetProbabilityOfColumn("age", 50, zeros,ones)
