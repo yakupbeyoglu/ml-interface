@@ -108,9 +108,8 @@ class GausianNaiveBayes(MLModel):
         return (1 / (sqrt(2 * pi) * stddev)) * exponent
 
     def GetProbabilityOfColumn(self, columnname, value, zeros, ones):
-
-            print(f'{columnname}={value}|Death_Evenet=0 probability = ',self.__GetProbability(value, zeros[columnname]["mean"], zeros[columnname]["std_dev"]))
-            print(f'{columnname}={value}|Death_Evenet=1 probability = ',self.__GetProbability(value, ones[columnname]["mean"], ones[columnname]["std_dev"]))
+            print(f'{columnname}={value}|Death_Evenet=0 probability = ','{:.10f}'.format(self.__GetProbability(value, zeros[columnname]["mean"], zeros[columnname]["std_dev"])))
+            print(f'{columnname}={value}|Death_Evenet=1 probability = ','{:.10f}'.format(self.__GetProbability(value, ones[columnname]["mean"], ones[columnname]["std_dev"])))
 
     def DataSetSummarize(self):
         summarize = []
@@ -143,7 +142,8 @@ class GausianNaiveBayes(MLModel):
                 "size": len(ones[column])
             }
             summarize_ones[column] = data
-            return summarize_zeros, summarize_ones
+        
+        return summarize_zeros, summarize_ones
 
     def separate_by_class(self):
         separated = dict()
