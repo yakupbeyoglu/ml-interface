@@ -15,16 +15,6 @@ from math import exp
 class GausianNaiveBayes(MLModel):
     def __init__(self, dataset):
         self.dataset = dataset
-        X_train, X_test, y_train, y_test = train_test_split(
-            dataset.GetXData(), dataset.GetYData(), test_size=0.5, random_state=0)
-
-        gnb = GaussianNB()
-        gnb.fit(X_train, y_train)
-
-        y_pred = gnb.predict(X_test)
-        print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
-        print("matrix : ", confusion_matrix(y_test, y_pred))
-        print("f1 score = ", f1_score(y_test, y_pred, zero_division=1))
 
     def Process(self, test_size=0.5, random_state=0):
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
@@ -33,6 +23,11 @@ class GausianNaiveBayes(MLModel):
 
     def Process(self, x_train, y_train, x_test):
         return self.__ProcessAlgorithm(x_train, y_train, x_test)
+
+    def __ProcessAlgorithm(self, x_train, y_train, x_test):
+        gnb = GaussianNB()
+        ml_process = gnb.fit(x_train, y_train)
+        return ml_process.predict(x_test)
 
     def KFold(self, number):
         print("K Fold")
@@ -75,8 +70,8 @@ class GausianNaiveBayes(MLModel):
     def GetPrecision(self, y_test, y_pred):
         return metrics.precision_score(y_test, y_pred, zero_division=0)
 
-    def GetPriorProbability(self):
-        return self.dataset.GetAmountOfClasses()
+    def GetPriorProbability(self, normalize=True):
+        return self.dataset.GetAmountOfClasses(normalize)
 
     def __Mean(self, key):
         mean = sum(self.dataset.GetXData()[key]) / \
@@ -84,6 +79,7 @@ class GausianNaiveBayes(MLModel):
         print(f'Mean of {key} = {mean}')
         return mean
 
+   #  Below For Probability calculation functions
     def __MeanArray(self, arr):
         mean = sum(arr) / float(len(arr))
         return mean
@@ -108,13 +104,14 @@ class GausianNaiveBayes(MLModel):
         return (1 / (sqrt(2 * pi) * stddev)) * exponent
 
     def GetProbabilityOfColumn(self, columnname, value, zeros, ones):
-            print(f'{columnname}={value}|Death_Evenet=0 probability = ','{:.10f}'.format(self.__GetProbability(value, zeros[columnname]["mean"], zeros[columnname]["std_dev"])))
-            print(f'{columnname}={value}|Death_Evenet=1 probability = ','{:.10f}'.format(self.__GetProbability(value, ones[columnname]["mean"], ones[columnname]["std_dev"])))
+            return self.__GetProbability(value, zeros[columnname]["mean"], zeros[columnname]["std_dev"])
+            
 
+    # Summaraze data based by classes
     def DataSetSummarize(self):
-        summarize = []
+        summarize=[]
         for column in self.dataset.GetXData():
-            data = {
+            data={
                 "name": column,
                 "mean": self.__Mean(column),
                 "std_dev": self.__StdDev(column),
@@ -123,6 +120,7 @@ class GausianNaiveBayes(MLModel):
             summarize.append(data)
         return summarize
 
+    # data set summarize based on class, column mean of class
     def DataSetSummarize(self, zeros=[], ones=[]):
 
         summarize_zeros = dict()
@@ -142,9 +140,10 @@ class GausianNaiveBayes(MLModel):
                 "size": len(ones[column])
             }
             summarize_ones[column] = data
-        
+
         return summarize_zeros, summarize_ones
 
+    # Seperate all items by class
     def separate_by_class(self):
         separated = dict()
         data = self.dataset.GetXData()
@@ -170,8 +169,3 @@ class GausianNaiveBayes(MLModel):
         for class_value, rows in separated.items():
             summaries[class_value] = self.DataSetSummarize(rows)
         return summaries
-
-    def __ProcessAlgorithm(self, x_train, y_train, x_test):
-        gnb = GaussianNB()
-        ml_process = gnb.fit(x_train, y_train)
-        return ml_process.predict(x_test)

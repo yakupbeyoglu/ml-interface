@@ -21,7 +21,6 @@ class LogisticRegressionModel(MLModel):
         pred = regression.predict(X_test)
         score = 0
         score = regression.score(X_test, y_test)
-        print("my score = ", score)
 
     def Process(self, test_size=0.5, random_state=0):
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
@@ -31,8 +30,13 @@ class LogisticRegressionModel(MLModel):
     def Process(self, x_train, y_train, x_test):
         return self.__ProcessAlgorithm(x_train, y_train, x_test)
 
+    def __ProcessAlgorithm(self, x_train, y_train, x_test):
+        regression = LogisticRegression(max_iter=1000)
+        ml_process = regression.fit(x_train, y_train)
+        return ml_process.predict(x_test)
+
+
     def KFold(self, number):
-        print("K Fold")
         kf = KFold(n_splits=number, random_state=None)
         x_data = self.dataset.GetXData()
         y_data = self.dataset.GetYData()
@@ -89,12 +93,11 @@ class LogisticRegressionModel(MLModel):
         scores = []
         for score in featureselect.scores_ : 
             scores.append('{0:f}'.format(score))
-        print("Scores = ", scores)
+        print("\n\nQuestion 6 : F_regression Scores(Pvalues) = ", scores)
         x_train_selected = featureselect.transform(x_train)
         x_test_selected = featureselect.transform(x_test)
         cols = featureselect.get_support(indices=True)
         features_df_new = x_train.iloc[:,cols]
-        print("selected features : \n ", features_df_new)
         return x_train_selected, x_test_selected
         
 
@@ -115,8 +118,3 @@ class LogisticRegressionModel(MLModel):
 
     def GetPriorProbability(self):
         return self.dataset.GetAmountOfClasses()
-
-    def __ProcessAlgorithm(self, x_train, y_train, x_test):
-        regression = LogisticRegression(max_iter=1000)
-        ml_process = regression.fit(x_train, y_train)
-        return ml_process.predict(x_test)

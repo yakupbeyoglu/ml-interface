@@ -26,19 +26,49 @@ x,y = dataset.GetXYData()
 print(x)
 print("Hey you can find values below\n", dataset.GetAmountOfClasses())
 
+# Question 1 
 gausian_naive_bayes = GausianNaiveBayes(dataset)
+print("prior probability-normalized  : \n", gausian_naive_bayes.GetPriorProbability())
+print("prior probability-not-normalized  : \n", gausian_naive_bayes.GetPriorProbability(False))
 
 print("below : \n\n\n")
-values = gausian_naive_bayes.KFold(5)
-print("Naive bayes KFOLD 5 :\n" , values)
-regression = LogisticRegressionModel(dataset)
-values = regression.KFold(5)
-print("Logistic Regression KFOLD 5:\n", values)
 
-values = regression.KBest(5, 5)
-print("Best Feature = \n", values)
+# Question 2
+
 print(gausian_naive_bayes.DataSetSummarize())
 zeros, ones = gausian_naive_bayes.separate_by_class()
 zeros, ones = gausian_naive_bayes.DataSetSummarize(zeros,ones)
-print("ones", ones)
-gausian_naive_bayes.GetProbabilityOfColumn("age", 90, zeros,ones)
+
+gausian_naive_bayes.GetProbabilityOfColumn("age", 60, zeros,ones)
+gausian_naive_bayes.GetProbabilityOfColumn("anaemia", 1, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("creatinine_phosphokinase", 315, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("diabetes", 1, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("ejection_fraction", 60, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("high_blood_pressure", 0, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("platelets", 454000, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("serum_creatinine", 1.1, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("serum_sodium", 131, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("sex", 1, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("smoking", 1, zeros, ones)
+gausian_naive_bayes.GetProbabilityOfColumn("time", 10, zeros, ones)
+
+
+
+#Question 3 
+values = gausian_naive_bayes.KFold(5)
+print("Question 4 : Naive bayes KFOLD 5 :\n")
+for i in values : 
+    print(f'\t {i} = {values[i]}')
+
+
+# Logsitict regression Kfold(5)
+regression = LogisticRegressionModel(dataset)
+values = regression.KFold(5)
+
+print("Question 5: Logistic Regression KFOLD 5 :\n")
+for i in values : 
+    print(f'\t {i} = {values[i]}')
+values = regression.KBest(5, 5)
+print("Quetion 7 : Best Feature = \n")
+for i in values : 
+    print(f'\t {i} = {values[i]}')
