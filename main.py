@@ -4,6 +4,8 @@ import logging
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
+from ML.ActivationFunctions import ActivationFunctions
+'''
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -72,3 +74,8 @@ values = regression.KBest(5, 5)
 print("Quetion 7 : Best Feature = \n")
 for i in values : 
     print(f'\t {i} = {values[i]}')
+'''
+
+print( ActivationFunctions.IsExist(0))
+print( ActivationFunctions.IsExist("ReLU"))
+print(ActivationFunctions.GetName(3))
