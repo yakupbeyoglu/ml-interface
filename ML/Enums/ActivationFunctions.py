@@ -1,7 +1,7 @@
-import enum
+from enum import Enum
+from .BaseEnum import BaseEnum
 
-
-class ActivationFunctions(enum.Enum):
+class ActivationFunctions(BaseEnum):
     # All related information found on https://keras.io/api/layers/activations/
     # linear unit activation function
     relu = 1
@@ -39,22 +39,3 @@ class ActivationFunctions(enum.Enum):
     # exponential actiation function
     # simpl value = exp(x)
     exponential = 9
-
-    # is exist support name of the functions or number value of the functions
-    @classmethod
-    def IsExist(cls, function):
-        isexist = False
-        if not type(function) == str:
-            isexist = function in cls._value2member_map_
-        else:
-            function = function.lower()
-            isexist = function in ActivationFunctions._member_names_
-        return isexist
-    
-    @classmethod
-    def GetName(cls, function):
-        if not cls.IsExist(function):
-            return None
-        if type(function) == str:
-            return function.lower()
-        return cls(function).name

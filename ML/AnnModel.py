@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Activation, Dense
-from ML.ActivationFunctions import ActivationFunctions
+from ML.Enums.ActivationFunctions import ActivationFunctions
 
 
 class AnnModel:
