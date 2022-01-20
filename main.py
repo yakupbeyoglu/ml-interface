@@ -77,4 +77,4 @@ for i in values :
 '''
 
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
-print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
+print(ActivationFunctions.GetName(ActivationFunctions.elu))

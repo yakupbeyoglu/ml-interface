@@ -15,8 +15,11 @@ from math import exp
 
 
 class Ann(MLModel):
-    def __init__(self, dataset):
+    def __init__(self, dataset, epoch, batch_size, log_verbose = False):
         self.dataset = dataset
+        self.epoch = epoch
+        self.batch = batch_size
+        self.log_status = log_verbose
 
     def Process(self, test_size=0.5, random_state=0):
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(

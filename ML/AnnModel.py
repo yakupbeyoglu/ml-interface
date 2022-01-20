@@ -1,7 +1,7 @@
 from keras.models import Sequential
 from keras.layers import Activation, Dense
 from ML.Enums.ActivationFunctions import ActivationFunctions
-
+from ML.Enums.Losses.Probabilistic import Probabilistic
 
 class AnnModel:
 
@@ -30,3 +30,13 @@ class AnnModel:
         if not ActivationFunctions.IsExist(activation):
             return False
         self.model.add(Dense(1, ActivationFunctions.GetName(activation)))
+    
+    def Compile(self, loss_function, metrics = ['accuracy']):
+        loss_is_exsits  = Probabilistic.IsExist(Probabilistic, loss_function)
+        if not loss_is_exsits:
+            AssertionError("Loss function is not exist")
+        self.model.compile(loss=Probabilistic.GetName(Probabilistic, loss_function), optimizer="adam", metrics=['accuracy'])
+    
+    def Fit(self, x_data, y_data, epochs, batch_size):
+        accurancy =self.model.evaluate(x_data, y_data)
+        print(f'Accuracy : {accurancy}')
