@@ -20,10 +20,7 @@ class Probabilistic(BaseEnum):
     # loss = y_pred - y_true * log(y_pred)
     poisson = 4
 
-    # binary crossentropy loss
-    binary_crossentropy = 5
-
     # Kullback-Leibler divergence between y_true and y_pred
     # loss = y_true * log(y_true / y_pred)
     # https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence
-    kl_divergence = 6
+    kl_divergence = 5

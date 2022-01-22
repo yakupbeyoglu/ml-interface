@@ -3,7 +3,7 @@ from .BaseEnum import BaseEnum
 
 class ActivationFunctions(BaseEnum):
     # All related information found on https://keras.io/api/layers/activations/
-    
+
     # linear unit activation function
     relu = 1
 

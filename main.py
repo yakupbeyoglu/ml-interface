@@ -5,6 +5,7 @@ from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
 from ML.Enums.ActivationFunctions import ActivationFunctions
+from ML.Ann import Ann
 '''
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
@@ -77,4 +78,6 @@ for i in values :
 '''
 
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
-print(ActivationFunctions.GetName(ActivationFunctions.elu))
+print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
+ann = Ann(None,100,32,False)
+ann.AddLayer(20,ActivationFunctions.relu)

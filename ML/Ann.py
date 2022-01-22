@@ -7,6 +7,7 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import KFold
 from ML.DataSet import DataSet
 from ML.MLModel import MLModel
+from ML.AnnModel import AnnModel
 from keras.models import Sequential
 from keras.layers import Dense
 from math import sqrt
@@ -21,6 +22,10 @@ class Ann(MLModel):
         self.batch = batch_size
         self.log_status = log_verbose
 
+    def AddLayer(self, number_of_nodes, activation="relu", input_dim=None):
+        self.model = AnnModel()
+        self.model.AddLayer(number_of_nodes, input_dim, activation)
+        print(self.model)
     def Process(self, test_size=0.5, random_state=0):
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
