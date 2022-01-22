@@ -2,6 +2,7 @@ from keras.models import Sequential
 from keras.layers import Activation, Dense
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Enums.Losses.Probabilistic import Probabilistic
+from keras.utils.vis_utils import plot_model
 from pandas import DataFrame
 
 
@@ -15,7 +16,7 @@ class AnnModel:
         # check is compiled or not
         self.__iscompiled = False
 
-    def AddLayer(self, number_of_nodes, activation="relu", input_dim=None):
+    def AddLayer(self, number_of_nodes, activation="relu", input=None):
         # check activation function is exist or not
         if not ActivationFunctions.IsExist(ActivationFunctions, activation):
             return False
@@ -23,8 +24,8 @@ class AnnModel:
         if number_of_nodes <= 0:
             return False
 
-        if not input_dim == None:
-            self.__model.add(Dense(number_of_nodes, input_dim=input_dim,
+        if not input == None:
+            self.__model.add(Dense(number_of_nodes, input_dim=input,
                                    activation=ActivationFunctions.GetName(ActivationFunctions, activation)))
         else:
             self.__model.add(Dense(number_of_nodes,
@@ -57,3 +58,9 @@ class AnnModel:
             assert("Model is not fitted, please compile & fit!")
         # round the value for prediction
         return (self.__model.predict(predictions_data) > 0.5).asType(int)
+
+    def PlotModel(self, full_file_path="model_plot.png"):
+        if not self.__iscompiled:
+            assert("Model is not compiled yet")
+        plot_model(self.__model, full_file_path, show_shapes=True,
+                   show_layer_names=True, show_layer_activations=True)

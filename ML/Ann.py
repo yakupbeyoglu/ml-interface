@@ -31,9 +31,11 @@ class Ann(MLModel):
             assert("Number of nodes not initalized")
         if activation == None:
             assert("Activation not initalized")
+        if self.model == None:
+            self.model = AnnModel()
+            print(f'input dim = ', input_dim)
 
-        self.model = AnnModel()
-        self.model.AddLayer(number_of_nodes, input_dim, activation)
+        self.model.AddLayer(number_of_nodes, activation, input_dim)
 
     def Process(self, test_size=0.5, random_state=0):
         self.__CheckModel()
@@ -61,6 +63,12 @@ class Ann(MLModel):
     def Process(self, x_train, y_train, x_test):
         self.__CheckModel()
         return self.__ProcessAlgorithm(x_train, y_train, x_test)
+
+    def PlotModel(self, full_file_path):
+        self.model.PlotModel(full_file_path)
+
+    def BuildModel(self):
+        self.model.Compile()
 
     def BinaryPredict(self, prediction_data):
         size = len(prediction_data)
