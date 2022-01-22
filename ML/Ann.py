@@ -1,4 +1,5 @@
 from math import sqrt
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn import metrics
@@ -10,33 +11,80 @@ from ML.MLModel import MLModel
 from ML.AnnModel import AnnModel
 from keras.models import Sequential
 from keras.layers import Dense
+from ML.Enums.Losses.Probabilistic import Probabilistic
+from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix, accuracy_score
 from math import sqrt
 from math import pi
 from math import exp
 
 
 class Ann(MLModel):
-    def __init__(self, dataset, epoch, batch_size, log_verbose = False):
+    def __init__(self, dataset, epoch, batch_size, log_verbose=False):
         self.dataset = dataset
         self.epoch = epoch
         self.batch = batch_size
         self.log_status = log_verbose
+        self.model = None
 
     def AddLayer(self, number_of_nodes, activation="relu", input_dim=None):
+        if number_of_nodes == None:
+            assert("Number of nodes not initalized")
+        if activation == None:
+            assert("Activation not initalized")
+
         self.model = AnnModel()
         self.model.AddLayer(number_of_nodes, input_dim, activation)
-        print(self.model)
+
     def Process(self, test_size=0.5, random_state=0):
+        self.__CheckModel()
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
-        return self.__ProcessAlgorithm(X_train, y_train, X_test)
+        pred = self.__ProcessAlgorithm(X_train, y_train, X_test)
+        y_pred = np.argmax(pred, axis=1)
+        predictionresult = {
+            "precision": 0,
+            "recall": 0,
+            "f1-score": 0,
+            "accurancy": 0
+        }
+        predictionresult["precision"] += precision_score(
+            y_test, y_pred, average="macro")
+        predictionresult["recall"] += recall_score(
+            y_test, y_pred, average="macro")
+        predictionresult["f1-score"] += f1_score(
+            y_test, y_pred, average="macro")
+        predictionresult["accurancy"] += accuracy_score(
+            y_test, y_pred, average="macro")
+        print(predictionresult)
+        return pred
 
     def Process(self, x_train, y_train, x_test):
+        self.__CheckModel()
         return self.__ProcessAlgorithm(x_train, y_train, x_test)
 
+    def BinaryPredict(self, prediction_data):
+        size = len(prediction_data)
+        if size == 0:
+            assert("Prediction data is empty")
+        predicted = self.model.MakePredictions(prediction_data)
+        numberoftrue = 0
+        for i in range(size):
+            list = prediction_data[i].tolist()
+            binaryclass = self.dataset.y[i]
+            print(
+                f'{list} => {predicted[i]} (expected class is {binaryclass})')
+            if predicted[i] == binaryclass:
+                numberoftrue += 1
+        accurancy = numberoftrue * 100 / size
+        print(f'Acurrancy is  = {accurancy} %')
+
+    def __CheckModel(self):
+        if self.model == None:
+            assert("ML Model is not created, can not process without model")
+
     def __ProcessAlgorithm(self, x_train, y_train, x_test):
-        gnb = GaussianNB()
-        ml_process = gnb.fit(x_train, y_train)
+        self.model.Compile()
+        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
         return ml_process.predict(x_test)
 
     def KFold(self, number):
@@ -56,11 +104,17 @@ class Ann(MLModel):
             x_train, x_test = x_data.iloc[train, :], x_data.iloc[test, :]
             y_train, y_test = y_data.iloc[train], y_data.iloc[test]
             pred = self.Process(x_train, y_train, x_test)
-            predictionresult["precision"] += self.GetPrecision(y_test, pred)
-            predictionresult["recall"] += self.GetRecall(y_test, pred)
-            predictionresult["f1-score"] += self.GetF1Score(y_test, pred)
-            predictionresult["accurancy"] += self.GetAccurancy(y_test, pred)
+            y_pred = np.argmax(pred, axis=1)
+            predictionresult["precision"] += precision_score(
+                y_test, y_pred, average="macro")
+            predictionresult["recall"] += recall_score(
+                y_test, y_pred, average="macro")
+            predictionresult["f1-score"] += f1_score(
+                y_test, y_pred, average="macro")
+            predictionresult["accurancy"] += accuracy_score(
+                y_test, y_pred, average="macro")
 
+        # to get average
         for value in predictionresult:
             predictionresult[value] /= number
         return predictionresult
@@ -80,5 +134,5 @@ class Ann(MLModel):
     def GetPrecision(self, y_test, y_pred):
         return metrics.precision_score(y_test, y_pred, zero_division=0)
 
-    def AttachModel(self, model) : 
+    def AttachModel(self, model):
         self.model = model
