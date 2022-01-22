@@ -1,3 +1,4 @@
+from ML.Enums.ActivationFunctions import ActivationFunctions
 from math import sqrt
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -26,7 +27,7 @@ class Ann(MLModel):
         self.log_status = log_verbose
         self.model = None
 
-    def AddLayer(self, number_of_nodes, activation="relu", input_dim=None):
+    def AddLayer(self, number_of_nodes, activation=ActivationFunctions.relu, input_dim=None):
         if number_of_nodes == None:
             assert("Number of nodes not initalized")
         if activation == None:
@@ -36,6 +37,10 @@ class Ann(MLModel):
             print(f'input dim = ', input_dim)
 
         self.model.AddLayer(number_of_nodes, activation, input_dim)
+    
+    def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
+        self.model.AddBinaryClassificationLayer(activation)
+
 
     def Process(self, test_size=0.5, random_state=0):
         self.__CheckModel()

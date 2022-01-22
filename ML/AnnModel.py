@@ -31,11 +31,11 @@ class AnnModel:
             self.__model.add(Dense(number_of_nodes,
                                    activation=ActivationFunctions.GetName(ActivationFunctions, activation)))
 
-    def AddBinaryClassficationLayer(self, activation="relu"):
+    def AddBinaryClassificationLayer(self, activation="relu"):
         # check activation function is exist or not
-        if not ActivationFunctions.IsExist(activation):
+        if not ActivationFunctions.IsExist(ActivationFunctions, activation):
             return False
-        self.__model.add(Dense(1, ActivationFunctions.GetName(activation)))
+        self.__model.add(Dense(1, ActivationFunctions.GetName(ActivationFunctions, activation)))
 
     def Compile(self, loss_function=Probabilistic.binary_crossentropy, metrics=['accuracy']):
         loss_is_exsits = Probabilistic.IsExist(Probabilistic, loss_function)
@@ -63,4 +63,4 @@ class AnnModel:
         if not self.__iscompiled:
             assert("Model is not compiled yet")
         plot_model(self.__model, full_file_path, show_shapes=True,
-                   show_layer_names=True, show_layer_activations=True)
+                   show_layer_names=True)
