@@ -6,29 +6,31 @@ from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Ann import Ann
-'''
+
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
 
 argparser.add_argument('--csv', type=str, help='CSV file path')
-argparser.add_argument('--index', type=int, help='Index of the class in the csv file')
+argparser.add_argument('--index', type=int,
+                       help='Index of the class in the csv file')
 
 arguments = argparser.parse_args()
-if not arguments.csv :
+if not arguments.csv:
     raise argparse.ArgumentTypeError('csv is not given')
 
-if not arguments.index : 
+if not arguments.index:
     raise argparse.ArgumentTypeError('--index is not given')
 
-print(f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
+print(
+    f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index, False);
+dataset = DataSet(arguments.csv, arguments.index, False)
 dataset.GetBarChartOfClasses()
-x,y = dataset.GetXYData()
+x, y = dataset.GetXYData()
 print(x)
 print("Hey you can find values below\n", dataset.GetAmountOfClasses())
-
+'''
 # Question 1 
 gausian_naive_bayes = GausianNaiveBayes(dataset)
 print("prior probability-normalized  : \n", gausian_naive_bayes.GetPriorProbability())
@@ -79,12 +81,20 @@ for i in values :
 
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(None,100,32,False)
-ann.AddLayer(20,ActivationFunctions.relu, 8)
+ann = Ann(dataset, 5, 32, False)
+ann.AddLayer(20, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
 ann.BuildModel()
-ann.PlotModel("/media/yakup/Samsung980/freelance/ml-interface/ml-interface/firstmodel.png")
+ann.PlotModel(
+    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/firstmodel.png")
 ann.BuildModel()
-ann.AddLayer(20,ActivationFunctions.relu)
-ann.PlotModel("/media/yakup/Samsung980/freelance/ml-interface/ml-interface/secondmodel.png")
+ann.AddLayer(15, ActivationFunctions.relu)
+ann.AddLayer(18, ActivationFunctions.relu)
+ann.AddLayer(18, ActivationFunctions.relu)
+
+ann.PlotModel(
+    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/secondmodel.png")
 ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
-ann.PlotModel("/media/yakup/Samsung980/freelance/ml-interface/ml-interface/binaryclass.png")
+ann.PlotModel(
+    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/binaryclass.png")
+kfoldresult = ann.KFold(5)
+print(kfoldresult)

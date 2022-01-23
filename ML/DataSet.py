@@ -29,6 +29,9 @@ class DataSet:
     def GetSize(self):
         return len(self.dataset.row)
     
+    def GetNumberOfColumn(self):
+        return len(self.dataset.columns)
+    
     def GetDataSet(self) :
         return self.dataset 
     

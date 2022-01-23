@@ -37,12 +37,11 @@ class Ann(MLModel):
             print(f'input dim = ', input_dim)
 
         self.model.AddLayer(number_of_nodes, activation, input_dim)
-    
+
     def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
         self.model.AddBinaryClassificationLayer(activation)
 
-
-    def Process(self, test_size=0.5, random_state=0):
+    def QuickProcess(self, test_size=0.5, random_state=0):
         self.__CheckModel()
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
@@ -61,7 +60,7 @@ class Ann(MLModel):
         predictionresult["f1-score"] += f1_score(
             y_test, y_pred, average="macro")
         predictionresult["accurancy"] += accuracy_score(
-            y_test, y_pred, average="macro")
+            y_test, y_pred)
         print(predictionresult)
         return pred
 
@@ -98,7 +97,7 @@ class Ann(MLModel):
     def __ProcessAlgorithm(self, x_train, y_train, x_test):
         self.model.Compile()
         ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
-        return ml_process.predict(x_test)
+        return self.model.MakeBinaryPredictions(x_test)
 
     def KFold(self, number):
         print("K Fold")
@@ -125,7 +124,7 @@ class Ann(MLModel):
             predictionresult["f1-score"] += f1_score(
                 y_test, y_pred, average="macro")
             predictionresult["accurancy"] += accuracy_score(
-                y_test, y_pred, average="macro")
+                y_test, y_pred)
 
         # to get average
         for value in predictionresult:

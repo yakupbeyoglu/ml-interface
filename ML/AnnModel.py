@@ -35,7 +35,8 @@ class AnnModel:
         # check activation function is exist or not
         if not ActivationFunctions.IsExist(ActivationFunctions, activation):
             return False
-        self.__model.add(Dense(1, ActivationFunctions.GetName(ActivationFunctions, activation)))
+        self.__model.add(Dense(1, ActivationFunctions.GetName(
+            ActivationFunctions, activation)))
 
     def Compile(self, loss_function=Probabilistic.binary_crossentropy, metrics=['accuracy']):
         loss_is_exsits = Probabilistic.IsExist(Probabilistic, loss_function)
@@ -49,15 +50,15 @@ class AnnModel:
         if self.__iscompiled == False:
             assert("Model is not compiled, please compile and re-run!")
         self.__isready = True
-        return self.__model.fit(x_data, y_data, epochs, batch_size)
+        return self.__model.fit(x_data, y_data, batch_size, epochs)
 
     def MakeBinaryPredictions(self, predictions_data):
-        if predictions_data == None:
+        if predictions_data.empty:
             assert("Prediction data can not be empty !")
         if not self.__isready:
             assert("Model is not fitted, please compile & fit!")
         # round the value for prediction
-        return (self.__model.predict(predictions_data) > 0.5).asType(int)
+        return (self.__model.predict(predictions_data) > 0.5).astype(int)
 
     def PlotModel(self, full_file_path="model_plot.png"):
         if not self.__iscompiled:
