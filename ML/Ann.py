@@ -17,6 +17,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score, confusion_m
 from math import sqrt
 from math import pi
 from math import exp
+import matplotlib.pyplot as pyplot
 
 
 class Ann(MLModel):
@@ -26,6 +27,7 @@ class Ann(MLModel):
         self.batch = batch_size
         self.log_status = log_verbose
         self.model = None
+        self.ml_process_history = None
 
     def AddLayer(self, number_of_nodes, activation=ActivationFunctions.relu, input_dim=None):
         if number_of_nodes == None:
@@ -41,7 +43,7 @@ class Ann(MLModel):
     def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
         self.model.AddBinaryClassificationLayer(activation)
 
-    def QuickProcess(self, test_size=0.5, random_state=0):
+    def QuickProcess(self, test_size=0.2, random_state=0):
         self.__CheckModel()
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
@@ -78,17 +80,11 @@ class Ann(MLModel):
         size = len(prediction_data)
         if size == 0:
             assert("Prediction data is empty")
-        predicted = self.model.MakePredictions(prediction_data)
-        numberoftrue = 0
+        predicted = self.model.MakeBinaryPredictions(prediction_data)
         for i in range(size):
-            list = prediction_data[i].tolist()
-            binaryclass = self.dataset.y[i]
+            list = prediction_data[i]
             print(
-                f'{list} => {predicted[i]} (expected class is {binaryclass})')
-            if predicted[i] == binaryclass:
-                numberoftrue += 1
-        accurancy = numberoftrue * 100 / size
-        print(f'Acurrancy is  = {accurancy} %')
+                f'{list} => {predicted[i]})')
 
     def __CheckModel(self):
         if self.model == None:
@@ -96,8 +92,36 @@ class Ann(MLModel):
 
     def __ProcessAlgorithm(self, x_train, y_train, x_test):
         self.model.Compile()
-        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
+        self.ml_process_history = self.model.Fit(
+            x_train, y_train, self.epoch, self.batch)
         return self.model.MakeBinaryPredictions(x_test)
+
+    # To Do : Accuracy should switched to metrics array
+    # PyPlot should be have graph classs to export all graphs
+    def ExportModelAccuracyGraph(self, modeltitle, exportpath):
+        print(self.ml_process_history.history.keys)
+        return
+        if self.ml_process_history == None:
+            raise("No history found, please Fit model before export graph")
+        pyplot.plot(self.ml_process_history.history['accuracy'])
+        # pyplot.plot(self.ml_process_history.history['val_accuracy'])
+        pyplot.title('Model - ' + modeltitle + ' Accuracy')
+        pyplot.ylabel('accuracy')
+        pyplot.xlabel('epoch')
+        pyplot.legend(['train', 'test'], loc='upper left')
+        pyplot.savefig(exportpath + modeltitle + '-Accuracy.png')
+        # clear plot
+        pyplot.clf()
+        # history of loss
+        pyplot.plot(self.ml_process_history.history['loss'])
+        # loss
+        # pyplot.plot(self.ml_process_history.history['val_loss'])
+        pyplot.title('Model - ' + modeltitle + ' Accuracy')
+        pyplot.ylabel('accuracy')
+        pyplot.xlabel('epoch')
+        pyplot.legend(['train', 'test'], loc='upper left')
+        pyplot.savefig(exportpath + modeltitle + '-Losses.png')
+        pyplot.clf()
 
     def KFold(self, number):
         print("K Fold")

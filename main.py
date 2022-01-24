@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+
+from pandas.core.frame import DataFrame
+from sklearn.utils import axis0_safe_slice
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
@@ -81,20 +84,28 @@ for i in values :
 
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 5, 32, False)
-ann.AddLayer(20, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann = Ann(dataset, 10, 50, False)
+ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
 ann.BuildModel()
 ann.PlotModel(
     "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/firstmodel.png")
 ann.BuildModel()
-ann.AddLayer(15, ActivationFunctions.relu)
-ann.AddLayer(18, ActivationFunctions.relu)
-ann.AddLayer(18, ActivationFunctions.relu)
+ann.AddLayer(10, ActivationFunctions.relu)
 
 ann.PlotModel(
     "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/secondmodel.png")
 ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.PlotModel(
     "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/binaryclass.png")
-kfoldresult = ann.KFold(5)
-print(kfoldresult)
+#kfoldresult = ann.KFold(5)
+#print(kfoldresult)
+
+history = ann.QuickProcess()
+ann.ExportModelAccuracyGraph("10-node-2-hiddenlayer", '/media/yakup/Samsung980/freelance/ml-interface/ml-interface/')
+
+# history = ann.QuickProcess()
+# print(history.history.keys)
+
+
+# to predict
+#ann.BinaryPredict([[18,1,52,0,25,1,276000,1.3,137,0,0,16]])
