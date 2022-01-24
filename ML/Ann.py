@@ -43,8 +43,9 @@ class Ann(MLModel):
     def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
         self.model.AddBinaryClassificationLayer(activation)
 
-    def QuickProcess(self, test_size=0.2, random_state=0):
+    def QuickProcess(self, test_size=0.2, random_state=0, validation_split_rate=None):
         self.__CheckModel()
+        # ValidationFit
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
         pred = self.__ProcessAlgorithm(X_train, y_train, X_test)
@@ -90,10 +91,11 @@ class Ann(MLModel):
         if self.model == None:
             assert("ML Model is not created, can not process without model")
 
-    def __ProcessAlgorithm(self, x_train, y_train, x_test):
+    def __ProcessAlgorithm(self, x_train, y_train, x_test, validation_split = 0):
         self.model.Compile()
         self.ml_process_history = self.model.Fit(
             x_train, y_train, self.epoch, self.batch)
+
         return self.model.MakeBinaryPredictions(x_test)
 
     # To Do : Accuracy should switched to metrics array

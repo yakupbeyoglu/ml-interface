@@ -100,7 +100,7 @@ ann.PlotModel(
 #kfoldresult = ann.KFold(5)
 #print(kfoldresult)
 
-history = ann.QuickProcess()
+history = ann.QuickProcess(validation_split_rate=0.2)
 ann.ExportModelAccuracyGraph("10-node-2-hiddenlayer", '/media/yakup/Samsung980/freelance/ml-interface/ml-interface/')
 
 # history = ann.QuickProcess()

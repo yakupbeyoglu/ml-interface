@@ -46,18 +46,12 @@ class AnnModel:
             Probabilistic, loss_function), optimizer="adam", metrics=['accuracy'])
         self.__iscompiled = True
 
-    def Fit(self, x_data, y_data, epochs, batch_size):
+    def Fit(self, x_data, y_data, epochs, batch_size, validation_split_rate=0):
         if self.__iscompiled == False:
             assert("Model is not compiled, please compile and re-run!")
         self.__isready = True
-        return self.__model.fit(x_data, y_data, batch_size, epochs, verbose=0)
+        return self.__model.fit(x_data, y_data, batch_size, epochs, validation_split=validation_split_rate,  verbose=0)
 
-    def ValidationFit(self, x_data, y_data, epochs, batch_size, validation_rate = 0.2):
-        if self.__iscompiled == False:
-            assert("Model is not compiled, please compile and re-run!")
-        self.__isready = True
-        return self.__model.fit(x_data, y_data, batch_size, epochs, verbose=0, validation_split=validation_rate)
-        
     def MakeBinaryPredictions(self, predictions_data):
         if not self.__isready:
             assert("Model is not fitted, please compile & fit!")
