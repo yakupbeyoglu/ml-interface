@@ -48,7 +48,8 @@ class Ann(MLModel):
         # ValidationFit
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
-        pred = self.__ProcessAlgorithm(X_train, y_train, X_test)
+        pred = self.__ProcessAlgorithm(
+            X_train, y_train, X_test, validation_split=validation_split_rate)
         y_pred = np.argmax(pred, axis=1)
         predictionresult = {
             "precision": 0,
@@ -91,23 +92,23 @@ class Ann(MLModel):
         if self.model == None:
             assert("ML Model is not created, can not process without model")
 
-    def __ProcessAlgorithm(self, x_train, y_train, x_test, validation_split = 0):
+    def __ProcessAlgorithm(self, x_train, y_train, x_test, validation_split=0):
         self.model.Compile()
         self.ml_process_history = self.model.Fit(
-            x_train, y_train, self.epoch, self.batch)
+            x_train, y_train, self.epoch, self.batch, validation_split_rate=validation_split)
 
         return self.model.MakeBinaryPredictions(x_test)
 
     # To Do : Accuracy should switched to metrics array
     # PyPlot should be have graph classs to export all graphs
     def ExportModelAccuracyGraph(self, modeltitle, exportpath):
-        print(self.ml_process_history.history.keys)
-        return
+        pyplot.clf()
+
         if self.ml_process_history == None:
             raise("No history found, please Fit model before export graph")
         pyplot.plot(self.ml_process_history.history['accuracy'])
-        # pyplot.plot(self.ml_process_history.history['val_accuracy'])
-        pyplot.title('Model - ' + modeltitle + ' Accuracy')
+        pyplot.plot(self.ml_process_history.history['val_accuracy'])
+        pyplot.title('Model  ' + modeltitle + ' Accuracy')
         pyplot.ylabel('accuracy')
         pyplot.xlabel('epoch')
         pyplot.legend(['train', 'test'], loc='upper left')
@@ -117,8 +118,8 @@ class Ann(MLModel):
         # history of loss
         pyplot.plot(self.ml_process_history.history['loss'])
         # loss
-        # pyplot.plot(self.ml_process_history.history['val_loss'])
-        pyplot.title('Model - ' + modeltitle + ' Accuracy')
+        pyplot.plot(self.ml_process_history.history['val_loss'])
+        pyplot.title('Model - ' + modeltitle + ' Losses')
         pyplot.ylabel('accuracy')
         pyplot.xlabel('epoch')
         pyplot.legend(['train', 'test'], loc='upper left')

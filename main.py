@@ -28,7 +28,7 @@ if not arguments.index:
 print(
     f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index, False)
+dataset = DataSet(arguments.csv, arguments.index, True)
 dataset.GetBarChartOfClasses()
 x, y = dataset.GetXYData()
 print(x)
@@ -81,27 +81,21 @@ print("Quetion 7 : Best Feature = \n")
 for i in values : 
     print(f'\t {i} = {values[i]}')
 '''
-
+modelname = "10-node-2-hidden-layer"
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 10, 50, False)
+ann = Ann(dataset, 50, 50, False)
 ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
-ann.BuildModel()
-ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/firstmodel.png")
-ann.BuildModel()
 ann.AddLayer(10, ActivationFunctions.relu)
-
-ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/secondmodel.png")
+ann.BuildModel()
 ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/binaryclass.png")
+    modelname + "-model.png")
 #kfoldresult = ann.KFold(5)
 #print(kfoldresult)
 
 history = ann.QuickProcess(validation_split_rate=0.2)
-ann.ExportModelAccuracyGraph("10-node-2-hiddenlayer", '/media/yakup/Samsung980/freelance/ml-interface/ml-interface/')
+ann.ExportModelAccuracyGraph(modelname, './')
 
 # history = ann.QuickProcess()
 # print(history.history.keys)
