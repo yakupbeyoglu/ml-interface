@@ -55,7 +55,7 @@ class Ann(MLModel):
             "precision": 0,
             "recall": 0,
             "f1-score": 0,
-            "accurancy": 0
+            "accuracy": 0
         }
         predictionresult["precision"] += precision_score(
             y_test, y_pred, average="macro")
@@ -63,10 +63,10 @@ class Ann(MLModel):
             y_test, y_pred, average="macro")
         predictionresult["f1-score"] += f1_score(
             y_test, y_pred, average="macro")
-        predictionresult["accurancy"] += accuracy_score(
+        predictionresult["accuracy"] += accuracy_score(
             y_test, y_pred)
         print(predictionresult)
-        return pred
+        return pred, predictionresult
 
     def Process(self, x_train, y_train, x_test):
         self.__CheckModel()

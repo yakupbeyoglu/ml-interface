@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+from matplotlib.pyplot import hist
 
 from pandas.core.frame import DataFrame
 from sklearn.utils import axis0_safe_slice
@@ -9,7 +10,7 @@ from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Ann import Ann
-
+import csv
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -28,7 +29,7 @@ if not arguments.index:
 print(
     f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index, True)
+dataset = DataSet(arguments.csv, arguments.index, True, False)
 dataset.GetBarChartOfClasses()
 x, y = dataset.GetXYData()
 print(x)
@@ -81,12 +82,12 @@ print("Quetion 7 : Best Feature = \n")
 for i in values : 
     print(f'\t {i} = {values[i]}')
 '''
-modelname = "10-node-2-hidden-layer"
+modelname = "12-node-2-hidden-layer-50_epoch-50_batch"
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
 ann = Ann(dataset, 50, 50, False)
-ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
-ann.AddLayer(10, ActivationFunctions.relu)
+ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann.AddLayer(12, ActivationFunctions.relu)
 ann.BuildModel()
 ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.PlotModel(
@@ -94,8 +95,17 @@ ann.PlotModel(
 #kfoldresult = ann.KFold(5)
 #print(kfoldresult)
 
-history = ann.QuickProcess(validation_split_rate=0.2)
+history,history_result = ann.QuickProcess(validation_split_rate=0.2)
 ann.ExportModelAccuracyGraph(modelname, './')
+print("MY HISTORY")
+print(history)
+field_names = ['precision', 'recall', 'f1-score', 'accuracy']
+history_result = [history_result]
+print(history_result)
+with open(modelname + "scores.csv", 'w') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=field_names)
+    writer.writeheader()
+    writer.writerows(history_result)
 
 # history = ann.QuickProcess()
 # print(history.history.keys)
