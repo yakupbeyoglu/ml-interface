@@ -7,6 +7,7 @@ from ML.LogisticRegression import LogisticRegressionModel
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Ann import Ann
 
+
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -25,7 +26,7 @@ if not arguments.index:
 print(
     f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index, False)
+dataset = DataSet(arguments.csv, arguments.index, False, False)
 dataset.GetBarChartOfClasses()
 x, y = dataset.GetXYData()
 print(x)
@@ -81,20 +82,16 @@ for i in values :
 
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 5, 32, False)
-ann.AddLayer(20, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann = Ann(dataset, 50, 32, False)
+ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann.AddLayer(10, ActivationFunctions.relu)
+ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.BuildModel()
-ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/firstmodel.png")
-ann.BuildModel()
-ann.AddLayer(15, ActivationFunctions.relu)
-ann.AddLayer(18, ActivationFunctions.relu)
-ann.AddLayer(18, ActivationFunctions.relu)
 
 ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/secondmodel.png")
-ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
-ann.PlotModel(
-    "/media/yakup/Samsung980/freelance/ml-interface/ml-interface/binaryclass.png")
+    "binaryclass.png")
 kfoldresult = ann.KFold(5)
+print("HEY")
 print(kfoldresult)
+# {'precision': 0.37846153846153846, 'recall': 0.5333333333333333, 'f1-score': 0.3772943567336091, 'accurancy': 0.6278531073446327}
+# {'precision': 0.3466666666666667, 'recall': 0.5, 'f1-score': 0.4094488188976378, 'accuracy': 0.6933333333333334})

@@ -44,25 +44,23 @@ class Ann(MLModel):
     def QuickProcess(self, test_size=0.5, random_state=0):
         self.__CheckModel()
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
-        ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
-        pred = self.__ProcessAlgorithm(X_train, y_train, X_test)
-        y_pred = np.argmax(pred, axis=1)
+        ), self.dataset.GetYData(), test_size=test_size)
+        self.pred_history, pred_result = self.__ProcessAlgorithm(X_train, y_train, X_test)
         predictionresult = {
             "precision": 0,
             "recall": 0,
             "f1-score": 0,
-            "accurancy": 0
+            "accuracy": 0
         }
         predictionresult["precision"] += precision_score(
-            y_test, y_pred, average="macro")
+            y_test, pred_result, average="macro")
         predictionresult["recall"] += recall_score(
-            y_test, y_pred, average="macro")
+            y_test, pred_result, average="macro")
         predictionresult["f1-score"] += f1_score(
-            y_test, y_pred, average="macro")
-        predictionresult["accurancy"] += accuracy_score(
-            y_test, y_pred)
-        print(predictionresult)
-        return pred
+            y_test, pred_result, average="macro")
+        predictionresult["accuracy"] += accuracy_score(
+            y_test, pred_result)
+        return self.pred_history, predictionresult
 
     def Process(self, x_train, y_train, x_test):
         self.__CheckModel()
@@ -78,7 +76,7 @@ class Ann(MLModel):
         size = len(prediction_data)
         if size == 0:
             assert("Prediction data is empty")
-        predicted = self.model.MakePredictions(prediction_data)
+        predicted = self.model.MakeBinaryPredictions(prediction_data)
         numberoftrue = 0
         for i in range(size):
             list = prediction_data[i].tolist()
@@ -97,7 +95,7 @@ class Ann(MLModel):
     def __ProcessAlgorithm(self, x_train, y_train, x_test):
         self.model.Compile()
         ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
-        return self.model.MakeBinaryPredictions(x_test)
+        return ml_process, self.model.MakeBinaryPredictions(x_test)
 
     def KFold(self, number):
         print("K Fold")
@@ -115,12 +113,11 @@ class Ann(MLModel):
         for train, test in kf.split(x_data):
             x_train, x_test = x_data.iloc[train, :], x_data.iloc[test, :]
             y_train, y_test = y_data.iloc[train], y_data.iloc[test]
-            pred = self.Process(x_train, y_train, x_test)
-            y_pred = np.argmax(pred, axis=1)
+            pred, y_pred = self.Process(x_train, y_train, x_test)
             predictionresult["precision"] += precision_score(
                 y_test, y_pred, average="macro")
             predictionresult["recall"] += recall_score(
-                y_test, y_pred, average="macro")
+                y_test, y_pred)
             predictionresult["f1-score"] += f1_score(
                 y_test, y_pred, average="macro")
             predictionresult["accurancy"] += accuracy_score(
