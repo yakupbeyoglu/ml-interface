@@ -17,6 +17,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score, confusion_m
 from math import sqrt
 from math import pi
 from math import exp
+import matplotlib.pyplot as pyplot
 
 
 class Ann(MLModel):
@@ -46,6 +47,27 @@ class Ann(MLModel):
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size)
         self.pred_history, pred_result = self.__ProcessAlgorithm(X_train, y_train, X_test)
+        predictionresult = {
+            "precision": 0,
+            "recall": 0,
+            "f1-score": 0,
+            "accuracy": 0
+        }
+        predictionresult["precision"] += precision_score(
+            y_test, pred_result, average="macro")
+        predictionresult["recall"] += recall_score(
+            y_test, pred_result, average="macro")
+        predictionresult["f1-score"] += f1_score(
+            y_test, pred_result, average="macro")
+        predictionresult["accuracy"] += accuracy_score(
+            y_test, pred_result)
+        return self.pred_history, predictionresult
+    
+    def QuickProcessGraph(self, test_size=0.5, random_state=0):
+        self.__CheckModel()
+        X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
+        ), self.dataset.GetYData(), test_size=test_size)
+        self.pred_history, pred_result = self.__ProcessAlgorithmValidation(X_train, y_train, X_test, y_test)
         predictionresult = {
             "precision": 0,
             "recall": 0,
@@ -97,6 +119,27 @@ class Ann(MLModel):
         ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
         return ml_process, self.model.MakeBinaryPredictions(x_test)
 
+    def __ProcessAlgorithmValidation(self, x_train, y_train, x_test, y_test):
+        self.model.Compile()
+        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch, (x_test, y_test))
+        return ml_process, self.model.MakeBinaryPredictions(x_test)
+        
+    def ExportModelAccuracyGraph(self, modeltitle, exportpath):
+        pyplot.clf()
+
+        if self.pred_history == None:
+            raise("No history found, please Fit model before export graph")
+        pyplot.plot(self.pred_history.history['accuracy'])
+        pyplot.plot(self.pred_history.history['loss'])
+        pyplot.title('Model  ' + modeltitle + ' Accuracy & Loss')
+        pyplot.ylabel('accuracy')
+        pyplot.xlabel('epoch')
+        pyplot.legend(['Accuracy', 'Loss'], loc='upper left')
+        pyplot.savefig(exportpath + modeltitle + '-Accuracy-Loss.png')
+        # clear plot
+        pyplot.clf()
+        # history of loss
+        
     def KFold(self, number):
         print("K Fold")
         kf = KFold(n_splits=number, random_state=None)

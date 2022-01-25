@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+import csv
+from pathlib import Path
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
@@ -26,7 +28,7 @@ if not arguments.index:
 print(
     f'csv path : {arguments.csv} \nindex of the class in csv : {arguments.index}')
 
-dataset = DataSet(arguments.csv, arguments.index, False, False)
+dataset = DataSet(arguments.csv, arguments.index, True, False)
 dataset.GetBarChartOfClasses()
 x, y = dataset.GetXYData()
 print(x)
@@ -80,18 +82,28 @@ for i in values :
     print(f'\t {i} = {values[i]}')
 '''
 
+modelname = "10-node-2-hidden-layer-50_epoch-50_batch"
+Path(modelname).mkdir(parents=True, exist_ok=True)
 print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
 print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 50, 32, False)
+ann = Ann(dataset, 50, 50, False)
 ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
 ann.AddLayer(10, ActivationFunctions.relu)
-ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.BuildModel()
-
+ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
 ann.PlotModel(
-    "binaryclass.png")
-kfoldresult = ann.KFold(5)
-print("HEY")
-print(kfoldresult)
-# {'precision': 0.37846153846153846, 'recall': 0.5333333333333333, 'f1-score': 0.3772943567336091, 'accurancy': 0.6278531073446327}
-# {'precision': 0.3466666666666667, 'recall': 0.5, 'f1-score': 0.4094488188976378, 'accuracy': 0.6933333333333334})
+    f'./{modelname}/model.png')
+#kfoldresult = ann.KFold(5)
+# print(kfoldresult)
+
+history, history_result = ann.QuickProcess(0.2)
+ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
+print("MY HISTORY")
+print(history_result)
+field_names = ['precision', 'recall', 'f1-score', 'accuracy']
+history_result = [history_result]
+print(history_result)
+with open(f'./{modelname}/scores.csv', 'w') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=field_names)
+    writer.writeheader()
+    writer.writerows(history_result)
