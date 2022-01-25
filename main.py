@@ -82,28 +82,55 @@ for i in values :
     print(f'\t {i} = {values[i]}')
 '''
 
-modelname = "10-node-2-hidden-layer-50_epoch-50_batch"
-Path(modelname).mkdir(parents=True, exist_ok=True)
-print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
-print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 50, 50, False)
-ann.AddLayer(10, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
-ann.AddLayer(10, ActivationFunctions.relu)
-ann.BuildModel()
-ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
-ann.PlotModel(
-    f'./{modelname}/model.png')
-#kfoldresult = ann.KFold(5)
-# print(kfoldresult)
+# Research Answers
+# modelname = "12-node-3-hidden-layer-100_epoch-50_batch_relu"
+# Path(modelname).mkdir(parents=True, exist_ok=True)
+# ann = Ann(dataset, 100, 50, False)
+# ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+# ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+# ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+# ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
+# ann.BuildModel()
 
+# ann.PlotModel(
+#     f'./{modelname}/model.png')
+# #kfoldresult = ann.KFold(5)
+# # print(kfoldresult)
+
+# history, history_result = ann.QuickProcess(0.2)
+# ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
+# print("MY HISTORY")
+# print(history_result)
+# field_names = ['precision', 'recall', 'f1-score', 'accuracy']
+# history_result = [history_result]
+# print(history_result)
+# with open(f'./{modelname}/scores.csv', 'w') as csvfile:
+#     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+#     writer.writeheader()
+#     writer.writerows(history_result)
+# kfoldresult  = ann.KFold(5)
+# print(kfoldresult)
+# kfold_history= [kfoldresult]
+# with open(f'./{modelname}/kfoldscores.csv', 'w') as csvfile:
+#     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+#     writer.writeheader()
+#     writer.writerows(kfold_history)
+
+# 100 epoch, 50 batch size
+ann = Ann(dataset, 100, 50, False)
+# 2 hidden layer with 12 nodes, relu activation function
+ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
+ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
+ann.BuildModel()
+# 20% for test 80% training
 history, history_result = ann.QuickProcess(0.2)
-ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
-print("MY HISTORY")
-print(history_result)
-field_names = ['precision', 'recall', 'f1-score', 'accuracy']
-history_result = [history_result]
-print(history_result)
-with open(f'./{modelname}/scores.csv', 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=field_names)
-    writer.writeheader()
-    writer.writerows(history_result)
+# select all data from dataset 
+x_test = dataset.GetXData()
+y_test = dataset.GetYData()
+# split for last 9 data
+last_9_x_test = x_test.tail(9)
+last_9_y_test = y_test.tail(9)
+scores = ann.EvaluateModel(last_9_x_test, last_9_y_test)
+print(f'Accuracy = {scores[1]}')
+print(ann.BinaryPredict(last_9_x_test))

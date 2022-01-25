@@ -99,16 +99,8 @@ class Ann(MLModel):
         if size == 0:
             assert("Prediction data is empty")
         predicted = self.model.MakeBinaryPredictions(prediction_data)
-        numberoftrue = 0
-        for i in range(size):
-            list = prediction_data[i].tolist()
-            binaryclass = self.dataset.y[i]
-            print(
-                f'{list} => {predicted[i]} (expected class is {binaryclass})')
-            if predicted[i] == binaryclass:
-                numberoftrue += 1
-        accurancy = numberoftrue * 100 / size
-        print(f'Acurrancy is  = {accurancy} %')
+        print(predicted)
+
 
     def __CheckModel(self):
         if self.model == None:
@@ -150,7 +142,7 @@ class Ann(MLModel):
             "precision": 0,
             "recall": 0,
             "f1-score": 0,
-            "accurancy": 0
+            "accuracy": 0
         }
 
         for train, test in kf.split(x_data):
@@ -163,14 +155,17 @@ class Ann(MLModel):
                 y_test, y_pred)
             predictionresult["f1-score"] += f1_score(
                 y_test, y_pred, average="macro")
-            predictionresult["accurancy"] += accuracy_score(
+            predictionresult["accuracy"] += accuracy_score(
                 y_test, y_pred)
 
         # to get average
         for value in predictionresult:
             predictionresult[value] /= number
         return predictionresult
-
+    
+    def EvaluateModel(self, x_test, y_test):
+        return self.model.EvaluateModel(x_test, y_test)
+    
     def GetConfusionMatrix(self, y_test, y_pred):
         return confusion_matrix(y_test, y_pred)
 

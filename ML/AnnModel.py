@@ -41,6 +41,9 @@ class AnnModel:
             self.__model.add(Dense(number_of_nodes,
                                    activation=ActivationFunctions.GetName(ActivationFunctions, activation)))
 
+    def EvaluateModel(self, x_test, y_test):
+        return self.__model.evaluate(x_test, y_test)
+        
     def AddBinaryClassificationLayer(self, activation="relu"):
         # check activation function is exist or not
         if not ActivationFunctions.IsExist(ActivationFunctions, activation):
