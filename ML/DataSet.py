@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 class DataSet:
     
-    def __init__(self, path, class_index, normalize = True, shuffle = True) :
+    def __init__(self, path, class_index, normalize = True, shuffle = False) :
         if not os.path.exists(path) : 
             raise f'Given csv file with {path} is not exists'
         self.csv_path = path

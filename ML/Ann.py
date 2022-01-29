@@ -47,10 +47,8 @@ class Ann(MLModel):
         self.__CheckModel()
         # ValidationFit
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
-        ), self.dataset.GetYData(), test_size=test_size, random_state=random_state)
-        pred = self.__ProcessAlgorithm(
-            X_train, y_train, X_test, validation_split=validation_split_rate)
-        y_pred = np.argmax(pred, axis=1)
+        ), self.dataset.GetYData(), test_size=test_size)
+        self.pred_history, pred_result = self.__ProcessAlgorithm(X_train, y_train, X_test)
         predictionresult = {
             "precision": 0,
             "recall": 0,
@@ -58,15 +56,35 @@ class Ann(MLModel):
             "accuracy": 0
         }
         predictionresult["precision"] += precision_score(
-            y_test, y_pred, average="macro")
+            y_test, pred_result, average="macro")
         predictionresult["recall"] += recall_score(
-            y_test, y_pred, average="macro")
+            y_test, pred_result, average="macro")
         predictionresult["f1-score"] += f1_score(
-            y_test, y_pred, average="macro")
+            y_test, pred_result, average="macro")
         predictionresult["accuracy"] += accuracy_score(
-            y_test, y_pred)
-        print(predictionresult)
-        return pred, predictionresult
+            y_test, pred_result)
+        return self.pred_history, predictionresult
+    
+    def QuickProcessGraph(self, test_size=0.5, random_state=0):
+        self.__CheckModel()
+        X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
+        ), self.dataset.GetYData(), test_size=test_size)
+        self.pred_history, pred_result = self.__ProcessAlgorithmValidation(X_train, y_train, X_test, y_test)
+        predictionresult = {
+            "precision": 0,
+            "recall": 0,
+            "f1-score": 0,
+            "accuracy": 0
+        }
+        predictionresult["precision"] += precision_score(
+            y_test, pred_result, average="macro")
+        predictionresult["recall"] += recall_score(
+            y_test, pred_result, average="macro")
+        predictionresult["f1-score"] += f1_score(
+            y_test, pred_result, average="macro")
+        predictionresult["accuracy"] += accuracy_score(
+            y_test, pred_result)
+        return self.pred_history, predictionresult
 
     def Process(self, x_train, y_train, x_test):
         self.__CheckModel()
@@ -83,10 +101,8 @@ class Ann(MLModel):
         if size == 0:
             assert("Prediction data is empty")
         predicted = self.model.MakeBinaryPredictions(prediction_data)
-        for i in range(size):
-            list = prediction_data[i]
-            print(
-                f'{list} => {predicted[i]})')
+        print(predicted)
+
 
     def __CheckModel(self):
         if self.model == None:
@@ -94,38 +110,30 @@ class Ann(MLModel):
 
     def __ProcessAlgorithm(self, x_train, y_train, x_test, validation_split=0):
         self.model.Compile()
-        self.ml_process_history = self.model.Fit(
-            x_train, y_train, self.epoch, self.batch, validation_split_rate=validation_split)
+        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch)
+        return ml_process, self.model.MakeBinaryPredictions(x_test)
 
-        return self.model.MakeBinaryPredictions(x_test)
-
-    # To Do : Accuracy should switched to metrics array
-    # PyPlot should be have graph classs to export all graphs
+    def __ProcessAlgorithmValidation(self, x_train, y_train, x_test, y_test):
+        self.model.Compile()
+        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch, (x_test, y_test))
+        return ml_process, self.model.MakeBinaryPredictions(x_test)
+        
     def ExportModelAccuracyGraph(self, modeltitle, exportpath):
         pyplot.clf()
 
-        if self.ml_process_history == None:
+        if self.pred_history == None:
             raise("No history found, please Fit model before export graph")
-        pyplot.plot(self.ml_process_history.history['accuracy'])
-        pyplot.plot(self.ml_process_history.history['val_accuracy'])
-        pyplot.title('Model  ' + modeltitle + ' Accuracy')
+        pyplot.plot(self.pred_history.history['accuracy'])
+        pyplot.plot(self.pred_history.history['loss'])
+        pyplot.title('Model  ' + modeltitle + ' Accuracy & Loss')
         pyplot.ylabel('accuracy')
         pyplot.xlabel('epoch')
-        pyplot.legend(['train', 'test'], loc='upper left')
-        pyplot.savefig(exportpath + modeltitle + '-Accuracy.png')
+        pyplot.legend(['Accuracy', 'Loss'], loc='upper left')
+        pyplot.savefig(exportpath + modeltitle + '-Accuracy-Loss.png')
         # clear plot
         pyplot.clf()
         # history of loss
-        pyplot.plot(self.ml_process_history.history['loss'])
-        # loss
-        pyplot.plot(self.ml_process_history.history['val_loss'])
-        pyplot.title('Model - ' + modeltitle + ' Losses')
-        pyplot.ylabel('accuracy')
-        pyplot.xlabel('epoch')
-        pyplot.legend(['train', 'test'], loc='upper left')
-        pyplot.savefig(exportpath + modeltitle + '-Losses.png')
-        pyplot.clf()
-
+        
     def KFold(self, number):
         print("K Fold")
         kf = KFold(n_splits=number, random_state=None)
@@ -136,28 +144,30 @@ class Ann(MLModel):
             "precision": 0,
             "recall": 0,
             "f1-score": 0,
-            "accurancy": 0
+            "accuracy": 0
         }
 
         for train, test in kf.split(x_data):
             x_train, x_test = x_data.iloc[train, :], x_data.iloc[test, :]
             y_train, y_test = y_data.iloc[train], y_data.iloc[test]
-            pred = self.Process(x_train, y_train, x_test)
-            y_pred = np.argmax(pred, axis=1)
+            pred, y_pred = self.Process(x_train, y_train, x_test)
             predictionresult["precision"] += precision_score(
                 y_test, y_pred, average="macro")
             predictionresult["recall"] += recall_score(
-                y_test, y_pred, average="macro")
+                y_test, y_pred)
             predictionresult["f1-score"] += f1_score(
                 y_test, y_pred, average="macro")
-            predictionresult["accurancy"] += accuracy_score(
+            predictionresult["accuracy"] += accuracy_score(
                 y_test, y_pred)
 
         # to get average
         for value in predictionresult:
             predictionresult[value] /= number
         return predictionresult
-
+    
+    def EvaluateModel(self, x_test, y_test):
+        return self.model.EvaluateModel(x_test, y_test)
+    
     def GetConfusionMatrix(self, y_test, y_pred):
         return confusion_matrix(y_test, y_pred)
 

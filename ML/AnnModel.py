@@ -1,10 +1,20 @@
+import numpy as np
+np.random.seed(2017)
+import random as rn
+rn.seed(1000)
+import os
+os.environ['PYTHONHASHSEED'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES']='-1'
+os.environ['TF_CUDNN_USE_AUTOTUNE'] ='0'
+import tensorflow as tf
+tf.random.set_seed(123)
+
 from keras.models import Sequential
 from keras.layers import Activation, Dense
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Enums.Losses.Probabilistic import Probabilistic
 from keras.utils.vis_utils import plot_model
 from pandas import DataFrame
-
 
 class AnnModel:
 
@@ -31,6 +41,9 @@ class AnnModel:
             self.__model.add(Dense(number_of_nodes,
                                    activation=ActivationFunctions.GetName(ActivationFunctions, activation)))
 
+    def EvaluateModel(self, x_test, y_test):
+        return self.__model.evaluate(x_test, y_test)
+        
     def AddBinaryClassificationLayer(self, activation="relu"):
         # check activation function is exist or not
         if not ActivationFunctions.IsExist(ActivationFunctions, activation):
@@ -50,7 +63,11 @@ class AnnModel:
         if self.__iscompiled == False:
             assert("Model is not compiled, please compile and re-run!")
         self.__isready = True
+<<<<<<< HEAD
         return self.__model.fit(x_data, y_data, batch_size, epochs, validation_split=validation_split_rate,  verbose=0)
+=======
+        return self.__model.fit(x_data, y_data, batch_size, epochs, shuffle=False)
+>>>>>>> wp/randomfix
 
     def MakeBinaryPredictions(self, predictions_data):
         if not self.__isready:
