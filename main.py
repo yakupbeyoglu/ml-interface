@@ -1,26 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 import logging
-<<<<<<< HEAD
-from matplotlib.pyplot import hist
-
-from pandas.core.frame import DataFrame
-from sklearn.utils import axis0_safe_slice
-=======
 import csv
 from pathlib import Path
->>>>>>> wp/randomfix
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
 from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Ann import Ann
-<<<<<<< HEAD
-import csv
-=======
 
 
->>>>>>> wp/randomfix
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -82,32 +71,9 @@ print("Quetion 7 : Best Feature = \n")
 for i in values : 
     print(f'\t {i} = {values[i]}')
 '''
-<<<<<<< HEAD
-modelname = "12-node-2-hidden-layer-50_epoch-50_batch"
-print(ActivationFunctions.IsExist(ActivationFunctions, ActivationFunctions.elu))
-print(ActivationFunctions.GetName(ActivationFunctions, ActivationFunctions.elu))
-ann = Ann(dataset, 50, 50, False)
-ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
-ann.AddLayer(12, ActivationFunctions.relu)
-ann.BuildModel()
-ann.AddBinaryClassificationLayer(ActivationFunctions.sigmoid)
-ann.PlotModel(
-    modelname + "-model.png")
-#kfoldresult = ann.KFold(5)
-#print(kfoldresult)
-
-history,history_result = ann.QuickProcess(validation_split_rate=0.2)
-ann.ExportModelAccuracyGraph(modelname, './')
-print("MY HISTORY")
-print(history)
-field_names = ['precision', 'recall', 'f1-score', 'accuracy']
-history_result = [history_result]
-print(history_result)
-with open(modelname + "scores.csv", 'w') as csvfile:
-=======
 
 ## Research Answers
-modelname = "12-node-3-hidden-layer-100_epoch-50_batch_relu"
+modelname = "contours"
 Path(modelname).mkdir(parents=True, exist_ok=True)
 ann = Ann(dataset, 100, 50, False)
 ann.AddLayer(12, ActivationFunctions.relu, dataset.GetNumberOfColumn() - 1)
@@ -129,19 +95,10 @@ field_names = ['precision', 'recall', 'f1-score', 'accuracy']
 history_result = [history_result]
 print(history_result)
 with open(f'./{modelname}/scores.csv', 'w') as csvfile:
->>>>>>> wp/randomfix
     writer = csv.DictWriter(csvfile, fieldnames=field_names)
     writer.writeheader()
     writer.writerows(history_result)
 
-<<<<<<< HEAD
-# history = ann.QuickProcess()
-# print(history.history.keys)
-
-
-# to predict
-#ann.BinaryPredict([[18,1,52,0,25,1,276000,1.3,137,0,0,16]])
-=======
 
 
 kfoldresult  = ann.KFold(5)
@@ -174,4 +131,3 @@ with open(f'./{modelname}/kfoldscores.csv', 'w') as csvfile:
 # scores = ann.EvaluateModel(last_9_x_test, last_9_y_test)
 # print(f'Accuracy = {scores[1]}')
 # print(ann.BinaryPredict(last_9_x_test))
->>>>>>> wp/randomfix

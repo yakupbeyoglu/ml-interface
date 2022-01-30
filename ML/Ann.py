@@ -103,7 +103,6 @@ class Ann(MLModel):
         predicted = self.model.MakeBinaryPredictions(prediction_data)
         print(predicted)
 
-
     def __CheckModel(self):
         if self.model == None:
             assert("ML Model is not created, can not process without model")

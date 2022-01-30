@@ -63,11 +63,7 @@ class AnnModel:
         if self.__iscompiled == False:
             assert("Model is not compiled, please compile and re-run!")
         self.__isready = True
-<<<<<<< HEAD
-        return self.__model.fit(x_data, y_data, batch_size, epochs, validation_split=validation_split_rate,  verbose=0)
-=======
         return self.__model.fit(x_data, y_data, batch_size, epochs, shuffle=False)
->>>>>>> wp/randomfix
 
     def MakeBinaryPredictions(self, predictions_data):
         if not self.__isready:
