@@ -1,4 +1,5 @@
 from ML.Enums.ActivationFunctions import ActivationFunctions
+from ML.MultiThread import MultiThread
 from math import sqrt
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -48,7 +49,8 @@ class Ann(MLModel):
         # ValidationFit
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size)
-        self.pred_history, pred_result = self.__ProcessAlgorithm(X_train, y_train, X_test)
+        self.pred_history, pred_result = self.__ProcessAlgorithm(
+            X_train, y_train, X_test)
         predictionresult = {
             "precision": 0,
             "recall": 0,
@@ -64,12 +66,13 @@ class Ann(MLModel):
         predictionresult["accuracy"] += accuracy_score(
             y_test, pred_result)
         return self.pred_history, predictionresult
-    
+
     def QuickProcessGraph(self, test_size=0.5, random_state=0):
         self.__CheckModel()
         X_train, X_test, y_train, y_test = train_test_split(self.dataset.GetXData(
         ), self.dataset.GetYData(), test_size=test_size)
-        self.pred_history, pred_result = self.__ProcessAlgorithmValidation(X_train, y_train, X_test, y_test)
+        self.pred_history, pred_result = self.__ProcessAlgorithmValidation(
+            X_train, y_train, X_test, y_test)
         predictionresult = {
             "precision": 0,
             "recall": 0,
@@ -114,9 +117,10 @@ class Ann(MLModel):
 
     def __ProcessAlgorithmValidation(self, x_train, y_train, x_test, y_test):
         self.model.Compile()
-        ml_process = self.model.Fit(x_train, y_train, self.epoch, self.batch, (x_test, y_test))
+        ml_process = self.model.Fit(
+            x_train, y_train, self.epoch, self.batch, (x_test, y_test))
         return ml_process, self.model.MakeBinaryPredictions(x_test)
-        
+
     def ExportModelAccuracyGraph(self, modeltitle, exportpath):
         pyplot.clf()
 
@@ -132,7 +136,7 @@ class Ann(MLModel):
         # clear plot
         pyplot.clf()
         # history of loss
-        
+
     def KFold(self, number):
         print("K Fold")
         kf = KFold(n_splits=number, random_state=None)
@@ -163,7 +167,7 @@ class Ann(MLModel):
         for value in predictionresult:
             predictionresult[value] /= number
         return predictionresult
-    
+        
     def EvaluateModel(self, x_test, y_test):
         return self.model.EvaluateModel(x_test, y_test)
     
