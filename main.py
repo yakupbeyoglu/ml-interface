@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 
 from pandas.core.frame import DataFrame
+from ML.PredictionDataSet import PredictionDataSet
 from ML.DataSet import DataSet
 from ML.GausianNaiveBayes import GausianNaiveBayes
 from ML.LogisticRegression import LogisticRegressionModel
@@ -20,6 +21,7 @@ def ExportPredictionResult(predictiondata, filepath):
         raise("Path is empty")
     file = open(filepath, 'w')
     writer = csv.writer(file)
+    print(f'Length = {len(predictiondata)}')
     for i in range(len(predictiondata)):
         writer.writerow(predictiondata[i])
 
@@ -60,7 +62,10 @@ print(
 dataset = DataSet(arguments.csv, arguments.index, False, True)
 dataset.GetBarChartOfClasses()
 x, y = dataset.GetXYData()
-print(x)
+test_set = PredictionDataSet(arguments.test)
+print("Yakup")
+print(test_set.GetDataSet())
+
 print("Hey you can find values below\n", dataset.GetAmountOfClasses())
 
 # result_path="data_size_500_resized_2"
@@ -96,21 +101,24 @@ ann.PlotModel(
 history, history_result, pred_result = ann.QuickProcess(0.2)
 ExportPredictionResult(pred_result, f'./{modelname}/myprediction.csv')
 field_names = ['precision', 'recall', 'f1-score', 'accuracy']
+ann.Train()
+prediction_result = ann.Predict(test_set)
+ExportPredictionResult(prediction_result, "yakup-prediction.csv")
+raise Exception("prediction done")
+# ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
+# print("MY HISTORY")
+# print(history_result)
+# history_result = [history_result]
+# print(history_result)
+# with open(f'./{modelname}/scores.csv', 'w') as csvfile:
+#     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+#     writer.writeheader()
+#     writer.writerows(history_result)
 
-ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
-print("MY HISTORY")
-print(history_result)
-history_result = [history_result]
-print(history_result)
-with open(f'./{modelname}/scores.csv', 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=field_names)
-    writer.writeheader()
-    writer.writerows(history_result)
-
-kfoldresult  = ann.KFold(5)
-print(kfoldresult)
-kfold_history= [kfoldresult]
-with open(f'./{modelname}/kfoldscores.csv', 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=field_names)
-    writer.writeheader()
-    writer.writerows(kfold_history)
+# kfoldresult  = ann.KFold(5)
+# print(kfoldresult)
+# kfold_history= [kfoldresult]
+# with open(f'./{modelname}/kfoldscores.csv', 'w') as csvfile:
+#     writer = csv.DictWriter(csvfile, fieldnames=field_names)
+#     writer.writeheader()
+#     writer.writerows(kfold_history)

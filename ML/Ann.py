@@ -45,7 +45,7 @@ class Ann(MLModel):
     def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
         self.model.AddBinaryClassificationLayer(activation)
 
-    def Train(self, test_dataset):
+    def Train(self):
         self.__CheckModel()
         x_train = self.dataset.GetXData()
         y_train  = self.dataset.GetYData()
@@ -55,9 +55,8 @@ class Ann(MLModel):
     def Predict(self, test_dataset):
         self.__CheckModel()
         assert not self.prediction_model == None, 'Ann model not trained!'
-        x_test = test_dataset.GetXData()
-        
-
+        x_test = test_dataset.GetDataSet()
+        return self.model.MakeBinaryPredictions(x_test)
 
     def QuickProcess(self, test_size=0.2, random_state=0, validation_split_rate=None):
         self.__CheckModel()

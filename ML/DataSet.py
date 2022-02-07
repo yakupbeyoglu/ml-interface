@@ -15,10 +15,11 @@ class DataSet:
         if class_index < 0 : 
             raise f'Given classes index {class_index} is not valid'
         self.class_index = class_index
-        self.dataset = pandas.read_csv(self.csv_path)
+        self.dataset = pandas.read_csv(self.csv_path, header=None)
         if normalize: 
             scaler = MinMaxScaler()
             self.dataset = pandas.DataFrame(scaler.fit_transform(self.dataset), columns=self.dataset.columns, index=self.dataset.index)
+        
         if class_index > len(self.dataset.columns) : 
             raise f'Given classes index is {class_index} but number of columns in data set is {self.dataset.columns}'
         self.X = self.dataset.iloc[:, 0 : class_index - 1]

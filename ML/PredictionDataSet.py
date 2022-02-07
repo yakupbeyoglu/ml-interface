@@ -11,17 +11,13 @@ class PredictionDataSet:
         if not os.path.exists(path) : 
             raise f'Given csv file with {path} is not exists'
         self.csv_path = path
-        self.dataset = pandas.read_csv(self.csv_path)
-        
+        self.dataset = pandas.read_csv(self.csv_path, header=None)
         
     def GetSize(self):
-        return len(self.dataset.row)
+        return len(self.dataset.index)
     
     def GetNumberOfColumn(self):
         return len(self.dataset.columns)
     
     def GetDataSet(self) :
         return self.dataset 
-    
-    def GetXData(self) : 
-        return self.X
