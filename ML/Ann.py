@@ -29,6 +29,7 @@ class Ann(MLModel):
         self.log_status = log_verbose
         self.model = None
         self.ml_process_history = None
+        self.prediction_model = None
 
     def AddLayer(self, number_of_nodes, activation=ActivationFunctions.relu, input_dim=None):
         if number_of_nodes == None:
@@ -44,6 +45,20 @@ class Ann(MLModel):
     def AddBinaryClassificationLayer(self, activation=ActivationFunctions.relu):
         self.model.AddBinaryClassificationLayer(activation)
 
+    def Train(self, test_dataset):
+        self.__CheckModel()
+        x_train = self.dataset.GetXData()
+        y_train  = self.dataset.GetYData()
+        self.model.Compile()
+        self.prediction_model = self.model.Fit(x_train, y_train, self.epoch, self.batch)
+
+    def Predict(self, test_dataset):
+        self.__CheckModel()
+        assert not self.prediction_model == None, 'Ann model not trained!'
+        x_test = test_dataset.GetXData()
+        
+
+
     def QuickProcess(self, test_size=0.2, random_state=0, validation_split_rate=None):
         self.__CheckModel()
         # ValidationFit
@@ -51,6 +66,7 @@ class Ann(MLModel):
         ), self.dataset.GetYData(), test_size=test_size)
         self.pred_history, pred_result = self.__ProcessAlgorithm(
             X_train, y_train, X_test)
+            
         predictionresult = {
             "precision": 0,
             "recall": 0,
@@ -65,7 +81,7 @@ class Ann(MLModel):
             y_test, pred_result, average="macro")
         predictionresult["accuracy"] += accuracy_score(
             y_test, pred_result)
-        return self.pred_history, predictionresult
+        return self.pred_history, predictionresult, pred_result
 
     def QuickProcessGraph(self, test_size=0.5, random_state=0):
         self.__CheckModel()
@@ -90,6 +106,7 @@ class Ann(MLModel):
         return self.pred_history, predictionresult
 
     def Process(self, x_train, y_train, x_test):
+        print("YES started")
         self.__CheckModel()
         return self.__ProcessAlgorithm(x_train, y_train, x_test)
 
@@ -136,6 +153,56 @@ class Ann(MLModel):
         # clear plot
         pyplot.clf()
         # history of loss
+        
+    
+
+
+
+    def MultiThreadKFold(self, number):
+        print("K Fold")
+        kf = KFold(n_splits=number, random_state=None)
+        x_data = self.dataset.GetXData()
+        y_data = self.dataset.GetYData()
+
+        predictionresult = {
+            "precision": 0,
+            "recall": 0,
+            "f1-score": 0,
+            "accuracy": 0
+        }
+        i = 1
+        thread_array = []
+        x_trains = []
+        y_trains = []
+        x_tests = []
+        y_tests = []
+        for train, test in kf.split(x_data):
+            print(f'fold index = {i}')
+            x_train, x_test = x_data.iloc[train, :], x_data.iloc[test, :]
+            y_train, y_test = y_data.iloc[train], y_data.iloc[test]
+            x_trains.append(x_train)
+            y_trains.append(y_train)
+            x_tests.append(x_test)
+            y_tests.append(y_test)
+            thread_array.append(MultiThread(target = self.Process, args=(x_train, y_train, x_test)))
+            thread_array[-1].start()
+        
+        
+        for fold in range(number):
+            pred, y_pred = thread_array[fold].Join()
+            predictionresult["precision"] += precision_score(
+                y_tests[fold], y_pred, average="macro")
+            predictionresult["recall"] += recall_score(
+                y_tests[fold], y_pred)
+            predictionresult["f1-score"] += f1_score(
+                y_tests[fold], y_pred, average="macro")
+            predictionresult["accuracy"] += accuracy_score(
+                y_tests[fold], y_pred)
+        
+        for value in predictionresult:
+            predictionresult[value] /= number
+        return predictionresult
+
 
     def KFold(self, number):
         print("K Fold")
@@ -149,8 +216,9 @@ class Ann(MLModel):
             "f1-score": 0,
             "accuracy": 0
         }
-
+        i = 1
         for train, test in kf.split(x_data):
+            print(f'Fold {i}')
             x_train, x_test = x_data.iloc[train, :], x_data.iloc[test, :]
             y_train, y_test = y_data.iloc[train], y_data.iloc[test]
             pred, y_pred = self.Process(x_train, y_train, x_test)
@@ -162,6 +230,7 @@ class Ann(MLModel):
                 y_test, y_pred, average="macro")
             predictionresult["accuracy"] += accuracy_score(
                 y_test, y_pred)
+            i += 1 
 
         # to get average
         for value in predictionresult:

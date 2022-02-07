@@ -4,3 +4,5 @@ scikit-learn
 matplotlib
 tensorflow
 pydot
+ann_visualizer
+graphviz

@@ -69,7 +69,7 @@ class AnnModel:
         if not self.__isready:
             assert("Model is not fitted, please compile & fit!")
         # round the value for prediction
-        return (self.__model.predict(predictions_data) > 0.5).astype(int)
+        return (self.__model.predict(predictions_data) > 0.4).astype(int)
 
     def PlotModel(self, full_file_path="model_plot.png"):
         if not self.__iscompiled:

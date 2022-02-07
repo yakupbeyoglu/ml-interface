@@ -25,7 +25,6 @@ class DataSet:
         self.Y = self.dataset.iloc[:, class_index - 1]
         if isshuffle:
             self.X, self.Y = shuffle(self.X, self.Y)
-
         
     def GetSize(self):
         return len(self.dataset.row)
