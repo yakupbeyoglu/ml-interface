@@ -13,8 +13,9 @@ from ML.Enums.ActivationFunctions import ActivationFunctions
 from ML.Ann import Ann
 from ML.Knn import Knn
 import matplotlib.pyplot as pyplot
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
+
 
 def ExportPredictionResult(predictiondata, filepath):
     if filepath == None:
@@ -24,6 +25,18 @@ def ExportPredictionResult(predictiondata, filepath):
     print(f'Length = {len(predictiondata)}')
     for i in range(len(predictiondata)):
         writer.writerow(predictiondata[i])
+
+
+def RenderWithPredictionResult(predictiondata, filepath, new_path):
+    with open(filepath, 'r') as read_obj, \
+            open(new_path, 'w') as write_obj:
+        reader = list(csv.reader(read_obj))
+        print(f'Reader = {len(reader)}, writer = {len(predictiondata)}')
+        writer = csv.writer(write_obj)
+        for i in range(len(reader)):
+            reader[i].append(predictiondata[i][0])
+            writer.writerow(reader[i])
+
 
 def ExportGraph(names, scores, modelname, path):
     pyplot.clf()
@@ -37,7 +50,8 @@ def ExportGraph(names, scores, modelname, path):
     # clear plot
     pyplot.clf()
     # history of loss
-        
+
+
 argparser = argparse.ArgumentParser(
     description='Run this software with csv path and class index in the csv file'
 )
@@ -103,8 +117,9 @@ ExportPredictionResult(pred_result, f'./{modelname}/myprediction.csv')
 field_names = ['precision', 'recall', 'f1-score', 'accuracy']
 ann.Train()
 prediction_result = ann.Predict(test_set)
-ExportPredictionResult(prediction_result, "yakup-prediction.csv")
-raise Exception("prediction done")
+ExportPredictionResult(prediction_result, "prediction-result.csv")
+RenderWithPredictionResult(
+    prediction_result, arguments.test,  f'./{modelname}/Merged_dataset.csv')
 # ann.ExportModelAccuracyGraph(modelname, f'./{modelname}/')
 # print("MY HISTORY")
 # print(history_result)
